@@ -44,3 +44,31 @@ test("creates a new post", async (t) => {
   t.is(post.title, "Test")
   t.is(post.tags[2], "tag3")
 })
+
+test("gets all posts", async (t) => {
+  const { root, contract } = t.context.accounts
+
+  await root.call(contract, "add_post", {
+    title: "Test0",
+    description: "Test Description0",
+    tags: "tag1,tag2,tag3",
+    media: "post.png",
+  })
+  await root.call(contract, "add_post", {
+    title: "Test1",
+    description: "Test Description1",
+    tags: "tag4,tag5,tag6",
+    media: "post.png",
+  })
+  await root.call(contract, "add_post", {
+    title: "Test2",
+    description: "Test Description2",
+    tags: "tag1,tag5,tag7",
+    media: "post.png",
+  })
+
+  const allPosts: any = await contract.view("get_all_posts")
+
+  t.is(allPosts[1][1].title, "Test1")
+  t.is(allPosts[2][1].description, "Test Description2")
+})
